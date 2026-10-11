@@ -1,6 +1,6 @@
 credentials.simba*
-includes/SRL-t*
-includes/WaspLib*
+SRL-t*
+WaspLib*
 Data/cache*
 Data/WaspLib*
 Data/settings.ini
