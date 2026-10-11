@@ -1,0 +1,7 @@
+{$I WaspLib/main.simba}
+{$SCOPEDENUMS ON}
+
+
+begin
+
+end.
