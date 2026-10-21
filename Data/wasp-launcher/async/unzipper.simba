@@ -1,0 +1,26 @@
+var
+  path, name: String;
+
+procedure Free();
+begin
+  CloseFile(CreateFile({$MACRO CURRENT_DIRECTORY} + 'unzipper-' + LowerCase(name) + '.done'));
+end;
+
+begin
+  path := GetProcessParameter('path');
+  name := GetProcessParameter('name');
+
+  if FileExists({$MACRO CURRENT_DIRECTORY} + 'downloader-' + LowerCase(name) + '.done') then
+    DeleteFile({$MACRO CURRENT_DIRECTORY} + 'downloader-' + LowerCase(name) + '.done');
+
+  AddOnTerminate(@Free);
+
+  WriteLn('[AsyncUnzipper]: Unzipping ', name, ', this might take a while.');
+
+  try
+    UnZipFile(path + name + '.zip', path + name);
+    DeleteFile(path + name + '.zip');
+  except
+    WriteLn('[AsyncUnzipper]: Error: ', GetExceptionMessage());
+  end;
+end;
