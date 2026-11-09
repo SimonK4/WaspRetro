@@ -387,13 +387,17 @@ begin
               Copy("middle", 0, Random(3, 6)),
               "tint",
               Copy("roofs", 0, Random(2, 4)),
-              Copy("worn items from gravestone", 0, Random(4, 12)),
-              copy("snow", 0, 4),
-              copy("show mouseover text", 0, random(9,15))];
+              Copy("Auto-equip & sort items from gravestone", 0, Random(4, 12)),
+              copy("Show mouseover text", 0, random(9,15)),
+              copy("Loot Drop notifications", 0, random(10,15)),
+              copy("Untradeable loot notifications", 0, random(10,15))];
 
   onArray.Shuffle();
 
-  offArray := [Copy("switcher", 0, Random(2, 5))];
+  offArray := [Copy("switcher", 0, Random(2, 5)),
+              copy("snow", 0, 4)];
+
+  offArray.Shuffle();
 
   WriteLn("Verifying settings options...");
 
