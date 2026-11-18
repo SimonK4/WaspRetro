@@ -64,8 +64,8 @@ function TRSOptions.ToggleSetting(textToFind : string; enable: Boolean) : Boolea
 var
   CheckBoxColour : TCTS1Color := CTS1(1184531, 13);
   CheckmarkColour : TCTS2Color := CTS2(2740765, 3, 0.41, 8.26);
-  BGColour1 : TCTS2Color := CTS2(2502455, 1, 0.99, 1.80);
-  BGColour2: TCTS2Color := CTS2(2766141, 1, 0.54, 1.47);
+  BGColour1 : TCTS2Color := CTS2(2502455, 1, 0.99, 1.80); //used to generate the box bounds
+  BGColour2: TCTS2Color := CTS2(2766141, 1, 0.54, 1.47);  //finds none atm?
   BackgroundColourTPA, OtherBackgroundColourTPA, CheckBoxArea, CheckMark, ShiftDropBar : TPointArray;
   ATPA : T2DPointArray;
   i : Int32;
@@ -73,28 +73,30 @@ var
 
   SearchBarColour : TCTS2Color := CTS2(2240055, 1, 0.01, 0.01);
   SearchBarArea : TPointArray;
-
 begin
   if SRL.FindColors(SearchBarArea, SearchBarColour, MainScreen.Bounds) < 1 then
-    Exit(False);
+    Exit(False);    //finds searchbar
 
-  Mouse.Click(SearchBarArea.Mean, MOUSE_LEFT);
+  Mouse.Click(SearchBarArea.Mean, MOUSE_LEFT);  //clicks search bar
 
   while SRL.CountColor(CTS2(2070783, 1, 0.01, 0.01), SearchBarArea.Bounds) > 0 do
-    Keyboard.PressKey(VK_BACK);
+    Keyboard.PressKey(VK_BACK);  //removes all text in search bar
 
-  Keyboard.Send(textToFind, VK_ENTER);
+  Keyboard.Send(textToFind, VK_ENTER);  // types our text in search bar, random amount
 
   //Get all the similar backgrounds
+  // finds the entry. ensure text is enough to find only one options
   SRL.FindColors(BackgroundColourTPA, BGColour1, MainScreen.Bounds);
   SRL.FindColors(OtherBackgroundColourTPA, BGColour2, Mainscreen.Bounds);
 
+  // incase colors change
   if (Length(BackgroundColourTPA) < 1) and (Length(OtherBackgroundColourTPA) < 1) then
   begin
     Writeln("Couldn't find colours");
     Exit(false);
   end;
 
+  //creates a massive box that we can use to search. removes noise and combines them
   ATPA := BackgroundColourTPA.Erode(1).Cluster(10) + OtherBackgroundColourTPA.Erode(1).Cluster(10);
 
   //Find the settings bar with our text.
@@ -147,6 +149,74 @@ begin
   Mouse.Click(CheckBoxArea.Mean, MOUSE_LEFT);
   Writeln("DISABLED " + debugString);
   Exit(true);
+end;
+
+function TRSOptions.ToggleAmount(textToFind: string) : Boolean;
+var
+  BGColour1 : TCTS2Color := CTS2(2568247, 1, 0.56, 1.26);
+  BGColour2: TCTS2Color := CTS2(2766141, 1, 0.54, 1.47);  //finds none atm?
+  amountBoxColor : TCTS2Color := CTS2(3226694, 1, 0.80, 0.41);
+  BackgroundColourTPA, OtherBackgroundColourTPA, ShiftDropBar,
+  amountBoxTPA : TPointArray;
+  ATPA : T2DPointArray;
+  i,y : Int32;
+  matches,debugStrings :tstringarray;
+
+  SearchBarColour : TCTS2Color := CTS2(2240055, 1, 0.01, 0.01);
+  SearchBarArea : TPointArray;
+begin
+  if SRL.FindColors(SearchBarArea, SearchBarColour, MainScreen.Bounds) < 1 then
+    Exit(False);    //finds searchbar
+
+  Mouse.Click(SearchBarArea.Mean, MOUSE_LEFT);  //clicks search bar
+
+  while SRL.CountColor(CTS2(2070783, 1, 0.01, 0.01), SearchBarArea.Bounds) > 0 do
+    Keyboard.PressKey(VK_BACK);  //removes all text in search bar
+
+  Keyboard.Send(textToFind, VK_ENTER);  // types our text in search bar, random amount
+
+  //Get all the similar backgrounds
+  // finds the entry. ensure text is enough to find only one options
+  SRL.FindColors(BackgroundColourTPA, BGColour1, MainScreen.Bounds);
+  SRL.FindColors(OtherBackgroundColourTPA, BGColour2, Mainscreen.Bounds);
+
+  // incase colors change
+  if (Length(BackgroundColourTPA) < 1) and (Length(OtherBackgroundColourTPA) < 1) then
+  begin
+    Writeln("Couldn't find colours");
+    Exit(false);
+  end;
+
+  //creates a massive box that we can use to search. removes noise and combines them
+  ATPA := BackgroundColourTPA.Erode(1).Cluster(10) + OtherBackgroundColourTPA.Erode(1).Cluster(10);
+
+  //Find the settings bar with our text.
+  for i := 0 to High(ATPA) do
+  begin
+    matches := OCR.RecognizeLines(ATPA[i].Bounds, TOCRColorFilter.Create([2070783], [2]), RS_FONT_BOLD_12);
+    writeln("our matches of :"+toStr(matches));
+    debugStrings := matches;
+
+    for y:=0 to high(matches) do
+      if matches[y].Contains(textToFind) then
+      begin
+        ShiftDropBar := ATPA[i];
+        break;
+      end;
+  end;
+
+  if ShiftDropBar = [] then
+  begin
+    Writeln(textToFind + " not found!");
+    Exit(false);
+  end;
+
+  if SRL.FindColors(amountBoxTPA, amountBoxColor, ShiftDropBar.Bounds) < 1 then
+    Exit(false);
+
+  mouse.click(amountBoxTPA.mean(), MOUSE_LEFT);
+  if not chat.FindQuery("threshold", 10000, 500) then exit;
+  chat.AnswerQuery("threshold", toStr(random(150000,250000)), 5000, 250);
 end;
 
 procedure TStringArray.Shuffle();
@@ -379,7 +449,7 @@ end;
 procedure CheckRegularSettings();
 var
   iterString : string;
-  offArray, onArray : TStringArray;
+  offArray, onArray, amountArray : TStringArray;
 begin
   onArray := [
               Copy("shift", 0, Random(3, 5)),
@@ -394,11 +464,17 @@ begin
 
   onArray.Shuffle();
 
-  offArray := [Copy("switcher", 0, Random(2, 5)),
-              copy("snow", 0, 4)];
+  offArray := [Copy("switcher", 0, Random(4, 5)),
+              copy("snow", 0, 4),
+              copy("Level-up guide list", 0, random(10, 12))];
 
   offArray.Shuffle();
 
+  // useful for added an amount
+  amountArray := ["Alchemy spells warning",
+                  "needed for drop"];
+
+  amountArray.Shuffle();
   WriteLn("Verifying settings options...");
 
   if Options.OpenSettings() then
@@ -415,6 +491,11 @@ begin
       Wait(200, 450);
     end;
 
+    for iterString in amountArray do
+    begin
+      Options.ToggleAmount(iterString);
+      waitEx(500, 250);
+    end;
     RSInterface.Close(true);
   end;
 end;

@@ -1440,9 +1440,11 @@ begin
 end;
 
 procedure TRetroForm.launchRuneliteEXE(Sender: TObject);
+var
+  str:string := directorySeparator;
 begin
   addRLSTuff(runeliteID,runeliteName);
-  RunCommand("C:\\Users\\Simon\\AppData\\Local\\RuneLite\\RuneLite.exe", []);
+  runcommand("C:"+str+"Program Files"+str+"Jagex Launcher"+str+"JagexLauncher.exe", []);
 end;
 
 procedure tRetroform.getData();
@@ -1687,7 +1689,7 @@ begin
 
   self.ButtonData.launchRunelite.Init(nil);
   self.ButtonData.launchRunelite.setParent(self.Form);
-  self.ButtonData.launchRunelite.setCaption("Launch Runelite!");
+  self.ButtonData.launchRunelite.setCaption("Jagex Launcher!");
   self.ButtonData.launchRunelite.SetBounds(
     Round((self.compData.monitorWidthForm*0.50)/(Round(self.compData.DPI/100))),
     Round((self.compData.monitorHeightForm*0.55)/(Round(self.compData.DPI/100))),

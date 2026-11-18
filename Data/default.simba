@@ -1,7 +1,3 @@
-{$I WaspLib/osr.simba}
-{$SCOPEDENUMS ON}
-
-
 begin
-
+  SimbaOpenInTab(appPath+"WaspRetroLauncher.simba");
 end.
