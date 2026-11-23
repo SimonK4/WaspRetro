@@ -1562,7 +1562,6 @@ begin
         self[x] := stringreplace(self[x],stringarray[y],'',  [rfreplaceall]);
 
   result := self;
-  //writeln("result is "+toStr(result));
 end;
 
 procedure tRetroForm.findScripts();
@@ -1583,16 +1582,12 @@ begin
     self.rawFilesLoc += filteredPass[x];
 
   self.filteredNames := filteredPass.trimStrings([str1,str2,'.simba']);
-
-  for x:=0 to high(self.filteredNames) do
-    writeln(self.filteredNames[x]);
 end;
 
 procedure tRetroForm.onClickRefreshScripts(Sender:TObject);
 var
   x:int32;
 begin
-  writeln("We are here!");
   self.theList.ScrollBy(1,1);
   self.theList.getItems.BeginUpdate();
   try

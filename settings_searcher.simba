@@ -75,31 +75,26 @@ var
   SearchBarArea : TPointArray;
 begin
   if SRL.FindColors(SearchBarArea, SearchBarColour, MainScreen.Bounds) < 1 then
-    Exit(False);    //finds searchbar
+    Exit(False);
 
-  Mouse.Click(SearchBarArea.Mean, MOUSE_LEFT);  //clicks search bar
+  Mouse.Click(SearchBarArea.Mean, MOUSE_LEFT);
 
   while SRL.CountColor(CTS2(2070783, 1, 0.01, 0.01), SearchBarArea.Bounds) > 0 do
-    Keyboard.PressKey(VK_BACK);  //removes all text in search bar
+    Keyboard.PressKey(VK_BACK);
 
-  Keyboard.Send(textToFind, VK_ENTER);  // types our text in search bar, random amount
+  Keyboard.Send(textToFind, VK_ENTER);
 
-  //Get all the similar backgrounds
-  // finds the entry. ensure text is enough to find only one options
   SRL.FindColors(BackgroundColourTPA, BGColour1, MainScreen.Bounds);
   SRL.FindColors(OtherBackgroundColourTPA, BGColour2, Mainscreen.Bounds);
 
-  // incase colors change
   if (Length(BackgroundColourTPA) < 1) and (Length(OtherBackgroundColourTPA) < 1) then
   begin
     Writeln("Couldn't find colours");
     Exit(false);
   end;
 
-  //creates a massive box that we can use to search. removes noise and combines them
   ATPA := BackgroundColourTPA.Erode(1).Cluster(10) + OtherBackgroundColourTPA.Erode(1).Cluster(10);
 
-  //Find the settings bar with our text.
   for i := 0 to High(ATPA) do
   begin
     match := OCR.Recognize(ATPA[i].Bounds, TOCRColorFilter.Create([2070783], [2]), RS_FONT_BOLD_12);
@@ -121,11 +116,9 @@ begin
     Exit(false);
   end;
 
-  //Now find the checkbox
   if SRL.FindColors(CheckBoxArea, CheckBoxColour, ShiftDropBar.Bounds) < 1 then
     Exit(false);
 
-  //Check if it's got no green
   if (SRL.FindColors(CheckMark, CheckmarkColour, CheckBoxArea.Bounds) < 1) then
   begin
     if enable then
@@ -139,7 +132,6 @@ begin
     Exit(true);
   end;
 
-  //If we have green
   if enable then
   begin
     Writeln(debugString + " already ENABLED!");
@@ -160,42 +152,35 @@ var
   amountBoxTPA : TPointArray;
   ATPA : T2DPointArray;
   i,y : Int32;
-  matches,debugStrings :tstringarray;
+  matches :tstringarray;
 
   SearchBarColour : TCTS2Color := CTS2(2240055, 1, 0.01, 0.01);
   SearchBarArea : TPointArray;
 begin
   if SRL.FindColors(SearchBarArea, SearchBarColour, MainScreen.Bounds) < 1 then
-    Exit(False);    //finds searchbar
+    Exit(False);
 
-  Mouse.Click(SearchBarArea.Mean, MOUSE_LEFT);  //clicks search bar
+  Mouse.Click(SearchBarArea.Mean, MOUSE_LEFT);
 
   while SRL.CountColor(CTS2(2070783, 1, 0.01, 0.01), SearchBarArea.Bounds) > 0 do
-    Keyboard.PressKey(VK_BACK);  //removes all text in search bar
+    Keyboard.PressKey(VK_BACK);
 
-  Keyboard.Send(textToFind, VK_ENTER);  // types our text in search bar, random amount
+  Keyboard.Send(textToFind, VK_ENTER);
 
-  //Get all the similar backgrounds
-  // finds the entry. ensure text is enough to find only one options
   SRL.FindColors(BackgroundColourTPA, BGColour1, MainScreen.Bounds);
   SRL.FindColors(OtherBackgroundColourTPA, BGColour2, Mainscreen.Bounds);
 
-  // incase colors change
   if (Length(BackgroundColourTPA) < 1) and (Length(OtherBackgroundColourTPA) < 1) then
   begin
     Writeln("Couldn't find colours");
     Exit(false);
   end;
 
-  //creates a massive box that we can use to search. removes noise and combines them
   ATPA := BackgroundColourTPA.Erode(1).Cluster(10) + OtherBackgroundColourTPA.Erode(1).Cluster(10);
 
-  //Find the settings bar with our text.
   for i := 0 to High(ATPA) do
   begin
     matches := OCR.RecognizeLines(ATPA[i].Bounds, TOCRColorFilter.Create([2070783], [2]), RS_FONT_BOLD_12);
-    writeln("our matches of :"+toStr(matches));
-    debugStrings := matches;
 
     for y:=0 to high(matches) do
       if matches[y].Contains(textToFind) then
@@ -203,6 +188,8 @@ begin
         ShiftDropBar := ATPA[i];
         break;
       end;
+
+    if ShiftDropBar <> [] then break;
   end;
 
   if ShiftDropBar = [] then
