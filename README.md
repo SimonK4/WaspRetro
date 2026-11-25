@@ -14,7 +14,7 @@ Welcome to **WaspRetro** — a continuation of Simba with support for **WaspLib*
    If you have multiple simbas installed you'll need to manually trigger the association. 
    ![Simba script association prompt](github_images/force_associate.png)
 
-5. **Open the launcher:** press **Play** once to open the launcher code, then press **Play** again to run it.
+5. **Open the Simba64.exe** 
 
    First, press **Play** to open the launcher code:
 
