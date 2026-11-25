@@ -1,12 +1,6 @@
 
 {
   A launcher that downloads the SRL-T and WaspLib from github.
-  The files are extracted and leftover data is deleted.
-  0 Includes are required, only simba
-
-
-
-
 }
 
 var
@@ -68,7 +62,7 @@ Result += "end;" + LineEnding+LineEnding;
 
 Result += "procedure cleaning(folder,includepath:string); " + LineEnding;
 Result += "var " + LineEnding;
-Result += "  strings:tstringarray:= ['zip-master', folder+'Cleaning', folder+'Failed', " + LineEnding;
+Result += "  strings:tstringarray:= [folder+'-master', folder+'Cleaning', folder+'Failed', " + LineEnding;
 Result += "  folder+'Done', folder+'Downloading', folder+'.zip']; " + LineEnding;
 Result += "  str:string; " + LineEnding;
 Result += "begin " + LineEnding;
@@ -147,6 +141,7 @@ Result += "  FolderName   := GetProcessParameter('folderName');"+lineending;
 Result += "  IncludesPath := GetProcessParameter('includes');"+lineending;
 Result += "  cleaning(folderName, includesPath);"+ LineEnding;
 Result += "  DownloadLibs(githubLink, ZipName, FolderName, IncludesPath);" + LineEnding;
+
 Result += "End." + LineEnding;
 
 end;
@@ -1554,7 +1549,6 @@ end;
 function tstringarray.trimStrings(stringArray:TStringArray):tstringarray;
 var
   x,y:int32;
-  temp:string;
 begin
   for x:=0 to high(self) do
     for y:=0 to high(stringarray) do
@@ -1585,8 +1579,6 @@ begin
 end;
 
 procedure tRetroForm.onClickRefreshScripts(Sender:TObject);
-var
-  x:int32;
 begin
   self.theList.ScrollBy(1,1);
   self.theList.getItems.BeginUpdate();
@@ -1743,8 +1735,6 @@ begin
 end;
 
 procedure tRetroForm.setList();
-var
-  x:int32;
 begin
   self.theList.Init(nil);
   self.theList.setParent(self.Form);

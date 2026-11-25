@@ -1,5 +1,3 @@
-{$DEFINE SCRIPT_ID := 'bb216fcd-d3a6-4c47-9830-0b45ae3c91f8'}
-{$DEFINE SCRIPT_REVISION := '8'}
 program SettingsSearcher;
 {$I WaspLib/osr.simba}
 
